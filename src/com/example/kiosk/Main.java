@@ -18,44 +18,12 @@ public class Main {
         //MenuItem을 관리하는 List에 등록
         List<MenuItem> menuItems = new ArrayList<>(List.of(menuItem1,menuItem2,menuItem3,menuItem4,menuItem5));
 
-        int index = 0;
+        //kiosk 객체 생성
+        Kiosk kiosk = new Kiosk(menuItems);
 
-        System.out.println("[ 맘스터치 메뉴 ]");
-        for (MenuItem item : menuItems) {
-            String menuName = item.getMenuName();
-            double menuPrice = item.getMenuPrice();
-            String menuInfo = item.getMenuInfo();
+        //키오스크 실행
+        kiosk.start();
 
-            int menuSize = 20;
-            int length = menuSize - menuName.length();
-
-            System.out.printf("%-2d. %-" + length + "s | W %3.1f | %s%n", ++index, menuName, menuPrice, menuInfo);
-        }
-        System.out.println("0 . 종료                |  종료");
-        System.out.println();
-
-
-
-        Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-            System.out.print("숫자를 입력하세요: ");
-            int menuNum = scanner.nextInt();
-
-            if(menuNum >= 1 && menuNum <= 5) {
-                MenuItem item = menuItems.get(menuNum-1);
-                int menuSize = 20;
-                int length = menuSize - item.getMenuName().length();
-
-                System.out.printf("%-2d. %-" + length + "s | W %3.1f | %s%n", menuNum, item.getMenuName(), item.getMenuPrice(), item.getMenuInfo());
-                break;
-            } else if (menuNum == 0) {
-                System.out.println("프로그램을 종료합니다");
-                break;
-            } else {
-                System.out.println("다시 입력하세요.");
-            }
-        }
 
 
     }
