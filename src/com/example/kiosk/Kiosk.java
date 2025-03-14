@@ -1,5 +1,6 @@
 package com.example.kiosk;
 
+import com.example.kiosk.cart.Cart;
 import com.example.kiosk.menu.Menu;
 
 import java.util.InputMismatchException;
@@ -22,35 +23,71 @@ public class Kiosk {
 
     //키오스크 시작하는 메서드
     public void start() {
+        //스캐너 선언
         Scanner scanner = new Scanner(System.in);
-
-        //키오스크 인트로 출력문
-        printBurgerMain();
-
 
         //필요한 변수들 전역변수로 선언 및 초기화
         boolean isKioskOff = false;
         boolean isCartEmpty = true;
         int mainNum=0;
+        Cart cart = new Cart();
+
+
+
+        //키오스크 기능 시작
+
+        //키오스크 인트로 출력문
+        printBurgerMain();
 
         //메뉴 고르기
         while (!isKioskOff) {
 
+
+            //루프 돌았을 때 장바구니가 비었는지 확인
+            //장바구니 상태값 boolean 재할당
+            if(cart.getCartList().isEmpty()) {
+                isCartEmpty = true;
+            } else {
+                isCartEmpty = false;
+            }
+
+
             //메인 메뉴 출력
-            printMainMenu();
+            //장바구니에 상품이 있을시엔 Orders, Cancel도 출력
+            printMainMenu(isCartEmpty);
+
+
+            //장바구니에 상품이 추가되어있다면
+            //메인메뉴에 Orders와 Cancel이 추가되어야하니 (메인 메뉴 2개 증가)
+            //입력값 검사에서 endNo를 담당하던 this.menus.size() 값에 +2를 해준다.
+            int endNo = 0;
+            if(isCartEmpty) {
+                endNo = this.menus.size();
+            } else {
+                endNo = this.menus.size() + 2;
+            }
+
 
             //메인메뉴 입력값 검사
-            mainNum = checkingInput(scanner,1, this.menus.size());
+            mainNum = checkingInput(scanner,1, endNo);
 
             //입력값에 따른 로직 or 메서드 실행
             if (mainNum >= 1 && mainNum <= this.menus.size()) {
                 //서브메뉴 고르기 실행
-                pickSubMenu(this.menus.get(mainNum-1), scanner);
+                pickSubMenu(this.menus.get(mainNum-1), scanner, cart);
             } else if(mainNum ==0) {
                 //키오스크 종료
                 System.out.println("키오스크를 종료합니다.");
                 isKioskOff = true;
                 break;
+            } else if ( mainNum == this.menus.size() + 1) {
+                //주문 여부에 따라 키오스크 종료 or 다시 메인메뉴 고르기
+                isKioskOff = pickOrders(cart, scanner);
+            } else if ( mainNum == this.menus.size() + 2) {
+                System.out.println("주문 취소 되었습니다.");
+                //장바구니 비우는 메서드 실행
+                cart.makeEmptyCart();
+                System.out.println("메인메뉴로 돌아갑니다.");
             }
 
 
@@ -61,8 +98,32 @@ public class Kiosk {
 
 
 
+    public boolean pickOrders(Cart cart, Scanner scanner) {
+
+        //장바구니 목록 출력
+        cart.printCartList();
+
+        //주문 할지 말지 입력
+        int orderNum = checkingInput(scanner, 1,2);
+
+        //주문 할게요
+        if(orderNum == 1) {
+            System.out.println("주문이 완료되었습니다.");
+            return  true;
+
+            //주문 안해요
+        } else if (orderNum == 2) {
+            System.out.println("메인 메뉴로 돌아갑니다.");
+            return  false;
+        }
+
+        return false;
+
+    }
+
+
     //서브메뉴 고르는 메서드
-    public void pickSubMenu(Menu menu, Scanner scanner) {
+    public void pickSubMenu(Menu menu, Scanner scanner, Cart cart) {
 
         while (true) {
             //서브메뉴 리스트 출력
@@ -78,6 +139,23 @@ public class Kiosk {
             } else if (menuItemNum == 0) {
                 System.out.println("메인메뉴로 돌아갑니다.");
                 break;
+            }
+
+
+            //선택한 메뉴 장바구니 추가 여부 입력
+            int num = checkingInput(scanner, 1, 2);
+
+            if(num == 1) {
+                //장바구니 추가 메서드
+                cart.addCartList(menu.getMenuItems().get(menuItemNum-1));
+
+                String menuName = menu.getMenuItems().get(menuItemNum-1).getMenuName();
+                System.out.println("\n"+menuName+" 메뉴가 장바구니에 추가되었습니다.");
+
+                break; //메인으로 돌아가기
+            } else if (num == 2) {
+                System.out.println("\n"+menu.getMenuCategory()+" 메뉴로 돌아갑니다.");
+                //while문 루프 돌기 때문에 submenu로 이동
             }
 
         }
@@ -114,14 +192,25 @@ public class Kiosk {
     }
 
     //메인메뉴 목록 출력 메서드
-    public void printMainMenu() {
+    public void printMainMenu(boolean isCartEmpty) {
 
         System.out.println("\n🍔 맘스터치 메뉴 🍔");
         for(int i=0; i<this.menus.size(); i++) {
             String menuCategory = this.menus.get(i).getMenuCategory();
             System.out.println((i+1)+". " + menuCategory);
         }
-        System.out.println("0. 종료\n");
+
+        //장바구니 상태에 따라 하위 출력문을 출력할지 말지 결정함
+        if(isCartEmpty) {
+            System.out.println("0. 종료\n");
+        }
+
+        if (!isCartEmpty) {
+            System.out.println("\n🍔 주문/장바구니 확인 🍔");
+            System.out.println(this.menus.size()+1 + ". Orders   | 장바구니를 확인 후 주문합니다");
+            System.out.println(this.menus.size()+2 + ". Cancel   | 주문을 취소합니다.");
+            System.out.println("0. 종료\n");
+        }
 
     }
 
