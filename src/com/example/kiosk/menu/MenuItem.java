@@ -1,4 +1,4 @@
-package com.example.kiosk;
+package com.example.kiosk.menu;
 
 public class MenuItem {
 

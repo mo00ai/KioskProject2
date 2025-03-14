@@ -1,4 +1,4 @@
-package com.example.kiosk;
+package com.example.kiosk.menu;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.example.kiosk;
 
-import javax.swing.*;
-import java.util.ArrayList;
+import com.example.kiosk.menu.Menu;
+
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;

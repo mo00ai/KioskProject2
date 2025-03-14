@@ -1,10 +1,9 @@
 package com.example.kiosk;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
+import com.example.kiosk.menu.Menu;
+import com.example.kiosk.menu.MenuItem;
+
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
