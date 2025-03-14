@@ -84,6 +84,10 @@ public class Cart {
         }
     }
 
+    //할인금액 구하기
+    public double getDisCountedPrice(Discount discount) {
+        return this.totalPrice * ((100 - discount.getPercentage()) * 0.01);
+    }
 
     //장바구니 비우기
     public void makeEmptyCart() {

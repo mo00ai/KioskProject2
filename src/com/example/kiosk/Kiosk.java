@@ -1,6 +1,7 @@
 package com.example.kiosk;
 
 import com.example.kiosk.cart.Cart;
+import com.example.kiosk.cart.Discount;
 import com.example.kiosk.menu.Menu;
 
 import java.util.InputMismatchException;
@@ -108,8 +109,24 @@ public class Kiosk {
 
         //주문 할게요
         if(orderNum == 1) {
-            System.out.println("주문이 완료되었습니다.");
+            //할인 목록 출력
+            Discount.printDiscountList();
+
+            //할인 선택 입력값 검사
+            int discountNum = checkingInput(scanner, 1, 4);
+
+            //할인 enum에서 선택
+            Discount myDiscount = Discount.selectDiscount(discountNum);
+
+            //할인에 따른 총액 출력
+            if(discountNum == 4) {
+                System.out.println("\n주문이 완료되었습니다. 금액은 W " + cart.getTotalPrice()+" 입니다.");
+            } else {
+                System.out.println("\n주문이 완료되었습니다. 금액은 W " + cart.getDisCountedPrice(myDiscount)+" 입니다.");
+            }
+
             return  true;
+
 
             //주문 안해요
         } else if (orderNum == 2) {
